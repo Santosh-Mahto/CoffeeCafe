@@ -53,17 +53,22 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'])
-@requires_auth('get:drinks-details')
+@requires_auth('get:drinks-detail')
 def get_drink_details(jwt):
-    drinks = Drink.query.order_by(Drink.id).all()
+    drinks = Drink.query.all()
     
-    if drinks:
+    if drinks is None:
+        abort(404)
+
+    else:
+        
         return jsonify({
                        'success' : True,
                        'drinks' : [drink.long() for drink in drinks] 
                        })
-    
 
+
+        
 '''
 @DONE implement endpoint
     POST /drinks
@@ -201,4 +206,4 @@ def auth_error(error):
                    'success' : False,
                    'error' : error.status_code,
                    'message' : error.error['description'] 
-                   })                    
+                   }),error.status_code                    
